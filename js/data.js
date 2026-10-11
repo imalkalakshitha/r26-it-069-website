@@ -37,7 +37,8 @@ window.SITE_DATA = {
     ctaLink: "domain.html",
     // YouTube video ID or full YouTube link
     youtubeId: "PASTE_YOUTUBE_VIDEO_ID",
-    logo: "assets/images/logo.svg"
+    logo: "assets/images/logo.png",          // full logo with text (home hero)
+    logoIcon: "assets/images/logo-icon.png"  // robot only (navbar, footer)
   },
 
   /* ------------------------------------------------------------------ */
@@ -83,6 +84,7 @@ window.SITE_DATA = {
         "Parent approve / disapprove / ignore control"
       ],
       output: "Offline learning cycle and recommendation assignment record",
+      heroChip: { label: "C1 EduPlay",       text: "86.09% model accuracy" },
       tags: ["Random Forest", "On-device", "Parent control"],
       details: []
     },
@@ -100,6 +102,7 @@ window.SITE_DATA = {
         "Attempt results and analytics"
       ],
       output: "Handwriting identification and learning progress",
+      heroChip: { label: "C2 Handwriting",   text: "93.37% CNN accuracy" },
       tags: ["CNN", "TensorFlow Lite", "Sinhala & English"],
       details: []
     },
@@ -117,6 +120,7 @@ window.SITE_DATA = {
         "Progress charts"
       ],
       output: "Reading fluency session record",
+      heroChip: { label: "C3 Timed Reading", text: "WPM progress tracking" },
       tags: ["Timer", "Tolerance thresholds", "Progress charts"],
       details: []   // ← paste extra C3 detail here (one string per paragraph)
     },
@@ -135,19 +139,21 @@ window.SITE_DATA = {
         "Pronunciation Error Pattern Analysis (PEPA)"
       ],
       output: "Pronunciation judgment and error patterns",
+      heroChip: { label: "C4 Pronunciation", text: "MFCC + DTW scoring" },
       tags: ["MFCC", "DTW", "VMG", "PEPA"],
       details: []   // ← paste extra C4 detail here (one string per paragraph)
     }
   ],
 
   /* ------------------------------------------------------------------ */
-  /* APP SCREENSHOTS (Home) — .webp / .jpg / .png, max ~300 KB each     */
+  /* APP SCREENSHOTS (Home) — .jpg / .webp / .png, max ~300 KB each.     */
+  /* Keep the order C1–C4: the hero phone pairs slide 1 with C1, etc.    */
   /* ------------------------------------------------------------------ */
   screenshots: [
-    { src: "assets/images/screenshots/eduplay.webp",       alt: "EduPlay activity screen",               caption: "EduPlay" },
-    { src: "assets/images/screenshots/handwriting.webp",   alt: "Handwriting recognition practice screen", caption: "Handwriting" },
-    { src: "assets/images/screenshots/timed-reading.webp", alt: "Guided timed reading screen",           caption: "Timed Reading" },
-    { src: "assets/images/screenshots/pronunciation.webp", alt: "Pronunciation verification screen",     caption: "Pronunciation" }
+    { src: "assets/images/screenshots/eduplay.jpg",       alt: "EduPlay activity screen",               caption: "EduPlay" },
+    { src: "assets/images/screenshots/handwriting.jpg",   alt: "Handwriting recognition practice screen", caption: "Handwriting" },
+    { src: "assets/images/screenshots/timed-reading.jpg", alt: "Guided timed reading screen",           caption: "Timed Reading" },
+    { src: "assets/images/screenshots/pronunciation.jpg", alt: "Pronunciation verification screen",     caption: "Pronunciation" }
   ],
 
   /* ------------------------------------------------------------------ */
@@ -264,19 +270,19 @@ window.SITE_DATA = {
     { name: "Closure",          activity: "TBA", exit: "TBA" }
   ],
 
-  // Assessments. status: "Completed" or "Upcoming"
+  // Assessments (shown sorted by date). status: "Completed" or "Upcoming". marks: "" hides the marks line.
   // feedback (optional): { text, image, imageAlt } — group-level panel feedback shown in the accordion.
   milestones: [
-    { title: "Project Proposal",        date: "TBA", marks: "TBA", status: "Completed", description: "Proposal presentation and documents, including the Project Charter and individual component proposals.",
+    { title: "Project Proposal",        date: "17 March 2026",     marks: "", status: "Completed", description: "Proposal presentation and documents, including the Project Charter and individual component proposals.",
       feedback: { text: "The panel approved the fully offline, on-device approach for all components. Pronunciation verification was noted as good, and the panel recommended handwriting recognition as an on-device component and asked the team to clarify how audio feedback fits into the reading activity." } },
-    { title: "Progress Presentation 1", date: "TBA", marks: "TBA", status: "Completed", description: "First progress review of the system and each component, presented to the panel.",
+    { title: "Progress Presentation 1", date: "12 May 2026",       marks: "", status: "Completed", description: "First progress review of the system and each component, presented to the panel.",
       feedback: { text: "Very good overall progress across the components." } },
-    { title: "Progress Presentation 2", date: "TBA", marks: "TBA", status: "Completed", description: "Second progress review of the integrated system and each component, presented to the panel.",
+    { title: "Progress Presentation 2", date: "2 September 2026",  marks: "", status: "Completed", description: "Second progress review of the integrated system and each component, presented to the panel.",
       feedback: { text: "Excellent progress for all four components. The panel recommended focusing on the research paper.",
                   image: "assets/images/feedback/pp2-feedback.png", imageAlt: "PP2 panel feedback sheet" } },
-    { title: "Final Assessment",        date: "TBA", marks: "TBA", status: "Upcoming",  description: "Final demonstration of the complete system with the final reports and research paper." },
-    { title: "Viva",                    date: "TBA", marks: "TBA", status: "Upcoming",  description: "Individual viva where each member presents and defends their component." },
-    { title: "Website",                 date: "TBA", marks: "TBA", status: "Upcoming",  description: "Research website presenting the project, milestones, documents, presentations and team." }
+    { title: "Final Assessment",        date: "20 October 2026",   marks: "", status: "Upcoming",  description: "Final demonstration of the complete system with the final reports and research paper." },
+    { title: "Viva (including website viva)", date: "20 October 2026", marks: "", status: "Upcoming",  description: "Individual viva where each member presents and defends their component." },
+    { title: "Website Submission",      date: "11 October 2026",   marks: "", status: "Completed", description: "Research website presenting the project, milestones, documents, presentations and team." }
   ],
 
   /* ------------------------------------------------------------------ */
@@ -335,10 +341,10 @@ window.SITE_DATA = {
   /* PRESENTATIONS                                                      */
   /* ------------------------------------------------------------------ */
   presentations: [
-    { title: "Proposal Presentation",   description: "Research need, objectives, scope and the four components.", date: "TBA", link: "https://drive.google.com/file/d/1-xy1ZGmg7BQEj97mfd1zPAG6bvMj7guW/view" },
-    { title: "Progress Presentation 1", description: "First progress review.",                                     date: "TBA", link: "https://drive.google.com/file/d/1f9M761GK-Il9-oKGsVqFsTuIsnJNDT4u/view" },
-    { title: "Progress Presentation 2", description: "Second progress review.",                                    date: "TBA", link: "https://drive.google.com/file/d/1vW9WQ5F5lYsoCUeHmZMhRQ6xqz3XDodr/view" },
-    { title: "Final Presentation",      description: "Final demonstration of the complete system.",               date: "TBA", link: "PASTE_DRIVE_LINK_HERE" }
+    { title: "Proposal Presentation",   description: "Research need, objectives, scope and the four components.", date: "17 March 2026", link: "https://drive.google.com/file/d/1-xy1ZGmg7BQEj97mfd1zPAG6bvMj7guW/view" },
+    { title: "Progress Presentation 1", description: "First progress review.",                                     date: "12 May 2026", link: "https://drive.google.com/file/d/1f9M761GK-Il9-oKGsVqFsTuIsnJNDT4u/view" },
+    { title: "Progress Presentation 2", description: "Second progress review.",                                    date: "2 September 2026", link: "https://drive.google.com/file/d/1vW9WQ5F5lYsoCUeHmZMhRQ6xqz3XDodr/view" },
+    { title: "Final Presentation",      description: "Final demonstration of the complete system.",               date: "20 October 2026", link: "PASTE_DRIVE_LINK_HERE" }
   ],
 
   /* ------------------------------------------------------------------ */

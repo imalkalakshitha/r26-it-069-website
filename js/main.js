@@ -27,6 +27,13 @@
     var parts = String(name).replace(/^(dr|prof|mr|mrs|ms|miss)\.?\s+/i, "").trim().split(/\s+/);
     return ((parts[0] || "")[0] + ((parts.length > 1 ? parts[parts.length - 1] : "")[0] || "")).toUpperCase();
   }
+  var MONTHS = ["january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"];
+  function parseDate(v) { // "17 March 2026" → timestamp, or null
+    var m = String(v || "").trim().match(/^(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})$/);
+    if (!m) return null;
+    var mi = MONTHS.indexOf(m[2].toLowerCase());
+    return mi < 0 ? null : new Date(+m[3], mi, +m[1]).getTime();
+  }
   function storageGet(k) { try { return window.localStorage.getItem(k); } catch (e) { return null; } }
   function storageSet(k, v) { try { window.localStorage.setItem(k, v); } catch (e) { /* storage unavailable */ } }
 
@@ -61,6 +68,8 @@
     close: '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>',
     external: '<path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>',
     play: '<polygon points="6 3 20 12 6 21 6 3"/>',
+    chevronLeft: '<polyline points="15 18 9 12 15 6"/>',
+    chevronRight: '<polyline points="9 18 15 12 9 6"/>',
     chevronDown: '<polyline points="6 9 12 15 18 9"/>',
     arrowUp: '<line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/>',
     arrowRight: '<line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>',
@@ -153,7 +162,7 @@
     el.innerHTML =
       '<nav class="container nav" aria-label="Main">' +
         '<a class="brand" href="index.html" aria-label="' + esc(s.title) + ' home">' +
-          '<img src="' + esc(s.logo || "assets/images/logo.svg") + '" alt="" width="40" height="40">' +
+          '<img class="brand-logo" src="' + esc(s.logoIcon || s.logo) + '" alt="" width="40" height="40">' +
           '<span class="brand-text"><span>' + esc(s.title) + "</span><small>" + esc(s.projectId) + "</small></span>" +
         "</a>" +
         '<ul class="nav-links" id="nav-links">' + links + "</ul>" +
@@ -196,21 +205,21 @@
     var el = $("#site-footer");
     if (!el) return;
     var s = D.site || {}, c = D.contact || {};
-    var email = isPlaceholder(c.groupEmail) ? "Email: TBA" : '<a href="mailto:' + esc(c.groupEmail) + '">' + esc(c.groupEmail) + "</a>";
-    var phone = isPlaceholder(c.phone) ? "Phone: TBA" : '<a href="' + esc(c.phoneLink || "tel:" + String(c.phone).replace(/\s+/g, "")) + '">' + esc(c.phone) + "</a>";
+    var email = isPlaceholder(c.groupEmail) ? "" : '<a href="mailto:' + esc(c.groupEmail) + '">' + esc(c.groupEmail) + "</a>";
+    var phone = isPlaceholder(c.phone) ? "" : '<a href="' + esc(c.phoneLink || "tel:" + String(c.phone).replace(/\s+/g, "")) + '">' + esc(c.phone) + "</a>";
     el.innerHTML =
       '<div class="container">' +
         '<div class="footer-grid">' +
           "<div>" +
-            '<div class="footer-brand"><img src="' + esc(s.logo || "assets/images/logo.svg") + '" alt="" width="40" height="40">' + esc(s.title) + "</div>" +
+            '<div class="footer-brand"><img src="' + esc(s.logoIcon || s.logo) + '" alt="" width="48" height="48">' + esc(s.title) + "</div>" +
             "<p>" + esc(s.projectId) + (s.panel ? " · Panel " + esc(s.panel) : "") + " · " + esc(s.officialTitle) + ". Final-year research project, " + esc(s.degree) + ", " + esc(s.faculty) + ", " + esc(s.university) + ".</p>" +
           "</div>" +
           '<div><h3>Quick links</h3><ul>' +
             NAV.map(function (n) { return '<li><a href="' + n.href + '">' + n.label + "</a></li>"; }).join("") +
           "</ul></div>" +
           '<div><h3>Contact</h3><ul>' +
-            "<li>" + icon("mail") + "<span>" + email + "</span></li>" +
-            "<li>" + icon("phone") + "<span>" + phone + "</span></li>" +
+            (email ? "<li>" + icon("mail") + "<span>" + email + "</span></li>" : "") +
+            (phone ? "<li>" + icon("phone") + "<span>" + phone + "</span></li>" : "") +
             "<li>" + icon("mapPin") + "<span>" + esc(c.address) + "</span></li>" +
           "</ul></div>" +
         "</div>" +
@@ -332,6 +341,128 @@
     els.forEach(function (e) { io.observe(e); });
   }
 
+  /* ---------------- Home hero: live app showcase ---------------- */
+  // Phone mockup that cycles through the screenshots; slide i pairs with component i (C1–C4).
+  var SLIDE_MS = 5000;
+
+  function showcaseHtml(comps, shots) {
+    var n = Math.min(comps.length, shots.length);
+    if (!n) return "";
+    var slides = "", dots = "", chips = "";
+    for (var i = 0; i < n; i++) {
+      var c = comps[i], sh = shots[i], chip = c.heroChip || { label: c.code + " " + c.title, text: c.summary };
+      slides += '<div class="sc-slide' + (i === 0 ? " is-active" : "") + '" role="group" aria-roledescription="slide" aria-label="' + (i + 1) + " of " + n + ": " + esc(c.title) + '"' + (i === 0 ? "" : ' aria-hidden="true"') + ">" +
+        '<img src="' + esc(sh.src) + '" alt="' + esc(sh.alt) + '" width="709" height="1600" data-fallback="shot"' + (i === 0 ? "" : ' loading="lazy"') + "></div>";
+      dots += '<button type="button" class="sc-dot" data-slide="' + i + '" aria-label="Show ' + esc(c.title) + ' screen"' + (i === 0 ? ' aria-current="true"' : "") + ">" +
+        '<span class="sc-dot-track"><span class="sc-dot-fill"></span></span></button>';
+      chips += '<div class="sc-chip sc-chip-' + (i + 1) + '" style="--float-delay:' + (-i * 1.4).toFixed(1) + 's">' +
+        '<div class="sc-chip-inner' + (i === 0 ? " is-active" : "") + '" data-slide="' + i + '">' +
+          '<button type="button" class="sc-chip-btn" data-slide="' + i + '" aria-label="Show ' + esc(c.title) + ' screen: ' + esc(chip.text) + '">' +
+            '<span class="sc-chip-icon">' + icon(c.icon) + "</span>" +
+            '<span class="sc-chip-text"><b>' + esc(chip.label) + "</b><small>" + esc(chip.text) + "</small></span>" +
+          "</button>" +
+          // the ONLY link to the Domain page
+          '<a class="sc-chip-link" href="domain.html#' + esc(String(c.code).toLowerCase()) + '" title="View details" aria-label="View details: ' + esc(c.title) + '">' + icon("arrowRight") + "</a>" +
+        "</div>" +
+      "</div>";
+    }
+    return '<div class="showcase reveal" style="--delay:.15s" role="region" aria-roledescription="carousel" aria-label="App screens">' +
+      '<div class="sc-bg" aria-hidden="true"><span class="sc-grid"></span><span class="sc-glow"></span><span class="sc-blob b1"></span><span class="sc-blob b2"></span><span class="sc-blob b3"></span></div>' +
+      '<div class="sc-stage">' +
+        '<div class="sc-float">' +
+          '<div class="phone">' +
+            '<span class="phone-notch" aria-hidden="true"><span class="phone-cam"></span></span>' +
+            '<div class="phone-screen" tabindex="0" aria-label="App screens. Use the left and right arrow keys to change screen.">' + slides + "</div>" +
+          "</div>" +
+          '<button type="button" class="sc-nav sc-prev" aria-label="Previous screen">' + icon("chevronLeft") + "</button>" +
+          '<button type="button" class="sc-nav sc-next" aria-label="Next screen">' + icon("chevronRight") + "</button>" +
+          '<div class="ble-badge"><span class="ble-icon">' + icon("bluetooth") + '<span class="ble-pulse" aria-hidden="true"></span></span>Buddy via BLE</div>' +
+        "</div>" +
+        '<div class="sc-chips">' + chips + "</div>" +
+      "</div>" +
+      '<div class="sc-dots">' + dots + "</div>" +
+    "</div>";
+  }
+
+  function initShowcase(root) {
+    var sc = $(".showcase", root);
+    if (!sc) return;
+    var slides = $all(".sc-slide", sc), dots = $all(".sc-dot", sc), chips = $all(".sc-chip-inner", sc);
+    var fills = $all(".sc-dot-fill", sc);
+    var n = slides.length, cur = 0;
+    var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var auto = !reduce && n > 1;
+    var elapsed = 0, last = null, hovering = 0;
+
+    function setFill(p) {
+      fills.forEach(function (f, k) { f.style.transform = "scaleX(" + (k === cur ? p : 0) + ")"; });
+    }
+    function show(i) {
+      cur = (i + n) % n;
+      slides.forEach(function (s, k) {
+        var on = k === cur;
+        s.classList.toggle("is-active", on);
+        if (on) s.removeAttribute("aria-hidden"); else s.setAttribute("aria-hidden", "true");
+        if (on) { var img = $("img", s); if (img) img.loading = "eager"; }
+      });
+      // warm up the next image so the crossfade never shows an empty screen
+      var nextImg = $("img", slides[(cur + 1) % n]); if (nextImg) nextImg.loading = "eager";
+      dots.forEach(function (d, k) { if (k === cur) d.setAttribute("aria-current", "true"); else d.removeAttribute("aria-current"); });
+      chips.forEach(function (c) { c.classList.toggle("is-active", +c.getAttribute("data-slide") === cur); });
+    }
+    // Manual change: jump, and restart the 5 s timer from this slide (auto-play keeps going)
+    function go(i) { show(i); elapsed = 0; setFill(auto ? 0 : 1); }
+
+    function paused() { return hovering > 0 || document.hidden; }
+    function frame(ts) {
+      var dt = last === null ? 0 : ts - last;
+      last = ts;
+      if (dt > 250) dt = 0; // tab was in the background or the page was busy: don't jump ahead
+      if (!paused()) {
+        elapsed += dt;
+        if (elapsed >= SLIDE_MS) { show(cur + 1); elapsed = 0; }
+        setFill(elapsed / SLIDE_MS);
+      }
+      window.requestAnimationFrame(frame);
+    }
+
+    // Clicks: chip buttons, dots, prev / next (the chip arrow link is a normal link)
+    $all(".sc-chip-btn, .sc-dot", sc).forEach(function (b) {
+      b.addEventListener("click", function () { go(+b.getAttribute("data-slide")); });
+    });
+    $(".sc-prev", sc).addEventListener("click", function () { go(cur - 1); });
+    $(".sc-next", sc).addEventListener("click", function () { go(cur + 1); });
+
+    // Keyboard: left / right while focus is anywhere in the showcase
+    sc.addEventListener("keydown", function (e) {
+      if (e.key === "ArrowLeft") { e.preventDefault(); go(cur - 1); }
+      else if (e.key === "ArrowRight") { e.preventDefault(); go(cur + 1); }
+    });
+
+    // Swipe on touch screens
+    var screen = $(".phone-screen", sc), sx = null, sy = null;
+    screen.addEventListener("touchstart", function (e) { var t = e.changedTouches[0]; sx = t.clientX; sy = t.clientY; }, { passive: true });
+    screen.addEventListener("touchend", function (e) {
+      if (sx === null) return;
+      var t = e.changedTouches[0], dx = t.clientX - sx, dy = t.clientY - sy;
+      sx = sy = null;
+      if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) go(dx < 0 ? cur + 1 : cur - 1);
+    }, { passive: true });
+
+    // Pause while the mouse is over the phone or a chip
+    $all(".phone, .sc-nav, .sc-chip-inner", sc).forEach(function (el) {
+      el.addEventListener("mouseenter", function () { hovering++; });
+      el.addEventListener("mouseleave", function () { hovering = Math.max(0, hovering - 1); });
+    });
+    // Tab hidden: freeze; when it comes back, carry on from where it was
+    document.addEventListener("visibilitychange", function () { last = null; });
+
+    sc.classList.toggle("is-auto", auto);
+    show(0);
+    setFill(auto ? 0 : 1);
+    if (auto) window.requestAnimationFrame(frame);
+  }
+
   function renderHome() {
     var root = $("#home");
     if (!root) return;
@@ -383,7 +514,7 @@
         '<div class="container">' +
           '<div class="hero-grid">' +
             '<div class="reveal">' +
-              '<span class="hero-tag">' + icon("cap") + " SLIIT Research Project · <b>" + esc(s.projectId) + "</b>" + (s.panel ? " · Panel " + esc(s.panel) : "") + "</span>" +
+              '<span class="hero-tag">' + icon("cap") + " SLIIT Research Project · <b>" + esc(s.projectId) + "</b>" + (s.panel ? ' · <b class="nw">Panel ' + esc(s.panel) + "</b>" : "") + "</span>" +
               "<h1>" + heroTitle + "</h1>" +
               '<p class="official">' + esc(s.officialTitle) + "</p>" +
               '<div class="hero-actions">' +
@@ -391,12 +522,7 @@
                 '<a class="btn btn-outline" href="#demo">' + icon("play") + " Watch Demo</a>" +
               "</div>" +
             "</div>" +
-            '<div class="hero-visual reveal" style="--delay:.15s">' +
-              '<div class="hero-blob"><img src="' + esc(s.logo || "assets/images/logo.svg") + '" alt="Smart Reading Buddy logo: an open book with a friendly Buddy face" width="240" height="240"></div>' +
-              '<span class="hero-chip c1">' + icon("globe") + " සිංහල + English</span>" +
-              '<span class="hero-chip c2">' + icon("wifiOff") + " Works offline</span>" +
-              '<span class="hero-chip c3">' + icon("bluetooth") + " Buddy via BLE</span>" +
-            "</div>" +
+            showcaseHtml(comps, D.screenshots || []) +
           "</div>" +
           '<div class="intro-grid">' +
             '<div class="abstract-card reveal"><h2>' + icon("book") + " Abstract</h2><p>" + esc(s.abstract) + "</p></div>" +
@@ -450,6 +576,7 @@
 
     wireImageFallbacks(root);
     initCounters(root);
+    initShowcase(root);
   }
 
   /* ---------------- Domain ---------------- */
@@ -679,16 +806,24 @@
   function renderMilestones() {
     var root = $("#milestones");
     if (!root) return;
-    var list = D.milestones || [];
+    // Sort assessments by date (undated ones keep their order, at the end)
+    var list = (D.milestones || []).map(function (m, i) { return { m: m, i: i, t: parseDate(m.date) }; })
+      .sort(function (a, b) {
+        if (a.t === null && b.t === null) return a.i - b.i;
+        if (a.t === null) return 1;
+        if (b.t === null) return -1;
+        return a.t - b.t || a.i - b.i;
+      }).map(function (x) { return x.m; });
     var phases = D.phases || [];
     var done = list.filter(function (m) { return /^completed$/i.test(m.status); }).length;
 
     var phaseHtml = phases.map(function (p, i) {
-      var tba = function (v) { return isPlaceholder(v) ? '<span class="muted">TBA</span>' : esc(v); };
+      var row = function (label, v) { return isPlaceholder(v) ? "" : "<dt>" + label + "</dt><dd>" + esc(v) + "</dd>"; };
+      var rows = row("Main activity", p.activity) + row("Exit criterion", p.exit);
       return '<li class="card phase reveal"' + d(i) + ">" +
         '<span class="phase-num" aria-hidden="true">' + (i + 1) + "</span>" +
         "<h3>" + esc(p.name) + "</h3>" +
-        "<dl><dt>Main activity</dt><dd>" + tba(p.activity) + "</dd><dt>Exit criterion</dt><dd>" + tba(p.exit) + "</dd></dl>" +
+        (rows ? "<dl>" + rows + "</dl>" : "") +
       "</li>";
     }).join("");
 
@@ -699,15 +834,15 @@
         '<span class="tl-dot">' + icon(isDone ? "check" : "clock") + "</span>" +
         '<div class="acc">' +
           '<button type="button" class="acc-btn" aria-expanded="false" aria-controls="' + id + '">' +
-            '<span class="acc-title"><strong>' + esc(m.title) + "</strong><span>" + icon("calendar") + esc(m.date) + "</span></span>" +
+            '<span class="acc-title"><strong>' + esc(m.title) + "</strong>" + (isPlaceholder(m.date) ? "" : "<span>" + icon("calendar") + esc(m.date) + "</span>") + "</span>" +
             statusBadge(isDone, "Completed", "Upcoming") +
             icon("chevronDown", "acc-chevron") +
           "</button>" +
           '<div class="acc-panel" id="' + id + '" role="region" aria-label="' + esc(m.title) + ' details"><div><div class="acc-body">' +
             "<p>" + esc(m.description) + "</p>" +
             '<div class="facts">' +
-              '<div class="fact"><small>' + icon("calendar") + "Date</small><b>" + esc(m.date) + "</b></div>" +
-              '<div class="fact"><small>' + icon("percent") + "Marks</small><b>" + esc(m.marks) + (isPlaceholder(m.marks) || /%$/.test(String(m.marks)) ? "" : "%") + "</b></div>" +
+              (isPlaceholder(m.date) ? "" : '<div class="fact"><small>' + icon("calendar") + "Date</small><b>" + esc(m.date) + "</b></div>") +
+              (isPlaceholder(m.marks) ? "" : '<div class="fact"><small>' + icon("percent") + "Marks</small><b>" + esc(m.marks) + (/%$/.test(String(m.marks)) ? "" : "%") + "</b></div>") +
               '<div class="fact"><small>' + icon("checkCircle") + "Status</small><b>" + esc(isDone ? "Completed" : "Upcoming") + "</b></div>" +
             "</div>" +
             feedbackBox(m.feedback) +
@@ -720,7 +855,7 @@
       '<div class="container">' +
         (phases.length ?
         '<section aria-labelledby="ph-h" class="phase-block">' +
-          '<div class="section-head reveal"><span class="eyebrow">Project Charter</span><h2 id="ph-h">Project phases</h2><p>The six phases defined in the charter, each with its main activity and exit criterion.</p></div>' +
+          '<div class="section-head reveal"><span class="eyebrow">Project Charter</span><h2 id="ph-h">Project phases</h2><p>' + (phases.some(function (p) { return !isPlaceholder(p.activity) || !isPlaceholder(p.exit); }) ? "The phases defined in the charter, each with its main activity and exit criterion." : "The phases defined in the Project Charter.") + '</p></div>' +
           '<ol class="phases">' + phaseHtml + "</ol>" +
         "</section>" : "") +
         '<section aria-labelledby="as-h">' +
@@ -766,19 +901,24 @@
   // Lightweight lightbox using <dialog>; falls back to opening the image in a new tab
   function initLightbox(root) {
     var links = $all(".fb-zoom", root);
-    if (!links.length) return;
-    var dlg = document.createElement("dialog");
-    if (typeof dlg.showModal !== "function") return; // old browser: the link simply opens the image
-    dlg.className = "lightbox";
-    dlg.setAttribute("aria-label", "Enlarged image");
-    dlg.innerHTML = '<button type="button" class="icon-btn lightbox-close" aria-label="Close">' + icon("close") + '</button><img alt="">';
-    document.body.appendChild(dlg);
-    var big = $("img", dlg);
-    $(".lightbox-close", dlg).addEventListener("click", function () { dlg.close(); });
-    dlg.addEventListener("click", function (e) { if (e.target === dlg) dlg.close(); }); // click on backdrop
+    if (!links.length || typeof document.createElement("dialog").showModal !== "function") return; // old browser: the link simply opens the image
+    var dlg = null, big = null;
+    function ensureDialog() { // built on first use, so no empty <img> sits in the page
+      if (dlg) return;
+      dlg = document.createElement("dialog");
+      dlg.className = "lightbox";
+      dlg.setAttribute("aria-label", "Enlarged image");
+      dlg.innerHTML = '<button type="button" class="icon-btn lightbox-close" aria-label="Close">' + icon("close") + "</button>";
+      big = document.createElement("img");
+      dlg.appendChild(big);
+      document.body.appendChild(dlg);
+      $(".lightbox-close", dlg).addEventListener("click", function () { dlg.close(); });
+      dlg.addEventListener("click", function (e) { if (e.target === dlg) dlg.close(); }); // click on backdrop
+    }
     links.forEach(function (a) {
       a.addEventListener("click", function (e) {
         e.preventDefault();
+        ensureDialog();
         var img = $("img", a);
         big.src = img ? img.currentSrc || img.src : a.href;
         big.alt = img ? img.alt : "";
@@ -786,6 +926,7 @@
       });
     });
   }
+
 
   /* ---------------- Documents ---------------- */
   function renderDocuments() {
@@ -857,7 +998,7 @@
       return '<article class="card doc-card reveal"' + d(i) + ">" +
         '<div class="slide-thumb' + (pending ? " is-pending" : "") + '" aria-hidden="true"><span class="num">0' + (i + 1) + "</span>" + icon("monitor") + "</div>" +
         '<div class="doc-top"><h3>' + esc(p.title) + "</h3>" + statusBadge(!pending, "Completed", "Pending") + "</div>" +
-        '<p class="card-meta">' + icon("calendar") + esc(p.date) + "</p>" +
+        (isPlaceholder(p.date) ? "" : '<p class="card-meta">' + icon("calendar") + esc(p.date) + "</p>") +
         "<p>" + esc(p.description) + "</p>" +
         viewButton(p.link, "View Slides", p.title) +
       "</article>";
@@ -918,8 +1059,8 @@
     root.innerHTML =
       '<div class="container"><div class="contact-grid">' +
         '<div class="contact-info">' +
-          info("mail", "Group email", hasEmail ? '<a href="mailto:' + esc(c.groupEmail) + '">' + esc(c.groupEmail) + "</a>" : "<b>TBA</b>") +
-          info("phone", "Phone", hasPhone ? '<a href="' + esc(c.phoneLink || "tel:" + String(c.phone).replace(/\s+/g, "")) + '">' + esc(c.phone) + "</a>" : "<b>TBA</b>") +
+          (hasEmail ? info("mail", "Group email", '<a href="mailto:' + esc(c.groupEmail) + '">' + esc(c.groupEmail) + "</a>") : "") +
+          (hasPhone ? info("phone", "Phone", '<a href="' + esc(c.phoneLink || "tel:" + String(c.phone).replace(/\s+/g, "")) + '">' + esc(c.phone) + "</a>") : "") +
           info("mapPin", "Address", "<b>" + esc(c.address) + "</b>") +
           '<div class="reveal"><div class="map-wrap"><iframe src="' + esc(c.mapEmbed) + '" title="Map showing SLIIT Malabe campus" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></div>' +
           '<a class="map-link" href="' + esc(c.mapLink) + '" target="_blank" rel="noopener noreferrer">Open in Google Maps ' + icon("external") + "</a></div>" +
