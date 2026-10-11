@@ -1170,3 +1170,64 @@ ul { padding-left: 1.2em; }
 /* Chip "View details" arrow: always visible (it is the only link to the Domain page) */
 .sc-chip-link, .sc-chip-inner:hover .sc-chip-link, .sc-chip-inner:focus-within .sc-chip-link { width: 24px; margin: 0; opacity: 1; transform: none; }
 .sc-chip-link:hover, .sc-chip-link:focus-visible { background: var(--primary-strong); color: #fff; border-color: var(--primary-strong); }
+
+/* =====================================================================
+   Navbar v2 — deep green gradient, white text, compact on scroll
+   ===================================================================== */
+:root {
+  --nav-from: #1E7B45;
+  --nav-to: #2E9E5B;
+  --nav-sub: rgba(255, 255, 255, .75);
+  --nav-h-compact: 56px;
+}
+:root[data-theme="dark"] { --nav-from: #0F3D24; --nav-to: #14532D; --nav-sub: rgba(255, 255, 255, .75); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --nav-from: #0F3D24; --nav-to: #14532D; --nav-sub: rgba(255, 255, 255, .75); } }
+
+/* Compact header after scrolling: everything that uses --header-h follows (sub-nav, scroll padding, mobile menu) */
+html.nav-compact { --header-h: var(--nav-h-compact); }
+
+.site-header,
+.site-header.is-scrolled {
+  background: linear-gradient(90deg, var(--nav-from), var(--nav-to));
+  -webkit-backdrop-filter: none; backdrop-filter: none;
+  border-bottom: 0;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, .12);
+}
+.nav { transition: height .3s ease; }
+
+/* Brand */
+.site-header .brand { color: #FFFFFF; }
+.site-header .brand-text small { color: var(--nav-sub); }
+.site-header .brand img.brand-logo {
+  width: 40px; height: 40px; padding: 3px; background: #FFFFFF; border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .18); transition: width .3s ease, height .3s ease;
+}
+html.nav-compact .site-header .brand img.brand-logo { width: 36px; height: 36px; }
+
+/* Links */
+.site-header .nav-links a { color: #FFFFFF; border-radius: 999px; transition: background-color .2s ease, color .2s ease; }
+.site-header .nav-links a:hover { background: rgba(255, 255, 255, .15); color: #FFFFFF; }
+:root .site-header .nav-links a[aria-current="page"],
+:root .site-header .nav-links a[aria-current="page"]:hover { background: #FFFFFF; color: #1E7B45; }
+.site-header .nav-links a:focus-visible { outline-color: #FFFFFF; }
+
+/* Theme toggle + hamburger */
+.site-header .icon-btn { background: rgba(255, 255, 255, .15); color: #FFFFFF; border: 1px solid rgba(255, 255, 255, .25); }
+.site-header .icon-btn:hover { background: rgba(255, 255, 255, .25); }
+.site-header .icon-btn:focus-visible { outline-color: #FFFFFF; }
+
+/* Mobile menu: same green, white links; drops down from the bottom of the header */
+@media (max-width: 960px) {
+  .site-header .nav-links {
+    position: absolute; top: 100%;
+    background: linear-gradient(90deg, var(--nav-from), var(--nav-to));
+    border-bottom: 0; box-shadow: 0 14px 30px rgba(0, 0, 0, .22);
+    max-height: calc(100vh - var(--header-h));
+  }
+  .site-header .nav-links a { border-radius: 12px; }
+}
+/* Light-mode contrast: #2E9E5B gave white text only ~3.7:1 at the right end, and 75% white subtitle 3.35:1.
+   Ending the gradient on #23824C keeps the look while every nav label stays ≥ 4.5:1 (WCAG AA). */
+:root { --nav-to: #23824C; --nav-sub: rgba(255, 255, 255, .95); }
+:root[data-theme="dark"] { --nav-to: #14532D; --nav-sub: rgba(255, 255, 255, .75); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --nav-to: #14532D; --nav-sub: rgba(255, 255, 255, .75); } }

@@ -187,12 +187,15 @@
       if (e.key === "Escape" && list.classList.contains("is-open")) { setMenu(false); menuBtn.focus(); }
     });
     document.addEventListener("click", function (e) {
-      if (list.classList.contains("is-open") && !el.contains(e.target)) setMenu(false);
+      // composedPath() still includes the header even if the tapped icon was just re-rendered
+      var inside = e.composedPath ? e.composedPath().indexOf(el) !== -1 : el.contains(e.target);
+      if (list.classList.contains("is-open") && !inside) setMenu(false);
     });
     window.addEventListener("resize", function () { if (window.innerWidth > 960) setMenu(false); });
 
     var onScroll = function () {
       el.classList.toggle("is-scrolled", window.scrollY > 8);
+      document.documentElement.classList.toggle("nav-compact", window.scrollY > 24);
       var tt = $(".to-top");
       if (tt) tt.classList.toggle("is-visible", window.scrollY > 600);
     };
