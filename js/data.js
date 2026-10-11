@@ -299,7 +299,7 @@ window.SITE_DATA = {
           link: "https://drive.google.com/file/d/1n5ZOoR3lSA7RqFBWe70njEAAY0qrOm47/view?usp=sharing",
           children: [
             { title: "Navodya W.P.D.N",  subtitle: "IT22204370 · C1 EduPlay",                    link: "https://drive.google.com/file/d/1xxRNPBOt799dkd4T6hwfvuePCMa5CtjR/view?usp=sharing" },
-            { title: "Methsani M.M.M",   subtitle: "IT22192646 · C2 Handwriting Recognition",    link: "https://drive.google.com/file/d/1EHSdRtMbb-JjcXdmPwHag6qRU2Iz7GFb/view?usp=sharing" },
+            { title: "Methsani M.M.M",   subtitle: "IT22192646 · C2 Handwriting Recognition",    link: "https://drive.google.com/file/d/1-4lkN6vjYazCppTlGDELxbHJCuwa8iEr/view?usp=sharing" },
             { title: "Karannagoda I.U",  subtitle: "IT22201300 · C3 Guided Timed Reading",       link: "https://drive.google.com/file/d/1zOZnmZZyxnQ6BYol0Ihq_LTByAZqDbDc/view?usp=sharing" },
             { title: "Abekoon I.L",      subtitle: "IT22175670 · C4 Pronunciation Verification", link: "https://drive.google.com/file/d/19S6xoWfBrs0o2S_MHBDx6QMTHGClyzwg/view?usp=sharing" }
           ]
