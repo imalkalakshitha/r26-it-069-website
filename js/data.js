@@ -36,7 +36,7 @@ window.SITE_DATA = {
     ctaText: "Explore the Research",
     ctaLink: "domain.html",
     // YouTube video ID or full YouTube link
-    youtubeId: "PASTE_YOUTUBE_VIDEO_ID",
+    youtubeId: "WUhJvQL3cks",
     logo: "assets/images/logo.png",          // full logo with text (home hero)
     logoIcon: "assets/images/logo-icon.png"  // robot only (navbar, footer)
   },

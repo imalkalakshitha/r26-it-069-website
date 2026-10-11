@@ -501,11 +501,15 @@
       return '<figure class="shot reveal"' + d(i) + '><div class="shot-frame"><img src="' + esc(sh.src) + '" alt="' + esc(sh.alt) + '" data-fallback="shot"></div><figcaption>' + esc(sh.caption) + "</figcaption></figure>";
     }).join("");
 
+    // Thumbnail + play button first; the iframe is only loaded on click (see initVideo)
     var video = vid
-      ? '<iframe src="https://www.youtube-nocookie.com/embed/' + vid + '?rel=0" title="Smart Reading Buddy demo video" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>'
+      ? '<button type="button" class="video-poster" data-vid="' + vid + '" aria-label="Play demo video">' +
+          '<img src="https://img.youtube.com/vi/' + vid + '/hqdefault.jpg" alt="" loading="lazy">' +
+          '<span class="play">' + icon("play") + "</span>" +
+        "</button>"
       : '<div class="video-placeholder"><span class="play">' + icon("play") + "</span><p>Demo video coming soon</p></div>";
     var videoNote = vid
-      ? '<p class="video-note">Video not playing? <a href="https://www.youtube.com/watch?v=' + vid + '" target="_blank" rel="noopener noreferrer">Watch it on YouTube ' + icon("external") + "</a></p>"
+      ? '<p class="video-note"><a href="https://youtu.be/' + vid + '" target="_blank" rel="noopener noreferrer">Watch on YouTube ' + icon("external") + "</a></p>"
       : "";
 
     var title = esc(s.title || "");
@@ -522,7 +526,7 @@
               '<p class="official">' + esc(s.officialTitle) + "</p>" +
               '<div class="hero-actions">' +
                 '<a class="btn btn-primary" href="' + esc(s.ctaLink || "domain.html") + '">' + esc(s.ctaText || "Explore") + " " + icon("arrowRight") + "</a>" +
-                '<a class="btn btn-outline" href="#demo">' + icon("play") + " Watch Demo</a>" +
+                '<a class="btn btn-outline" href="#demo" data-scroll="demo">' + icon("play") + " Watch Demo</a>" +
               "</div>" +
             "</div>" +
             showcaseHtml(comps, D.screenshots || []) +
@@ -580,6 +584,31 @@
     wireImageFallbacks(root);
     initCounters(root);
     initShowcase(root);
+    initVideo(root);
+  }
+
+  function initVideo(root) {
+    var poster = $(".video-poster", root);
+    if (poster) poster.addEventListener("click", function () {
+      var f = document.createElement("iframe");
+      f.src = "https://www.youtube-nocookie.com/embed/" + poster.getAttribute("data-vid") + "?rel=0&autoplay=1";
+      f.title = "Smart Reading Buddy demo video";
+      f.loading = "lazy";
+      f.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+      f.referrerPolicy = "strict-origin-when-cross-origin";
+      f.allowFullscreen = true;
+      poster.parentNode.replaceChild(f, poster);
+      f.focus();
+    });
+
+    // Hero "Watch Demo" button: smooth-scroll to the video (respects reduced motion)
+    var btn = $('[data-scroll="demo"]', root), demo = $("#demo", root);
+    if (btn && demo) btn.addEventListener("click", function (e) {
+      e.preventDefault();
+      var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      demo.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+      if (history.replaceState) history.replaceState(null, "", "#demo");
+    });
   }
 
   /* ---------------- Domain ---------------- */
