@@ -335,9 +335,9 @@ window.SITE_DATA = {
   /* PRESENTATIONS                                                      */
   /* ------------------------------------------------------------------ */
   presentations: [
-    { title: "Proposal Presentation",   description: "Research need, objectives, scope and the four components.", date: "TBA", link: "https://docs.google.com/presentation/d/1-xy1ZGmg7BQEj97mfd1zPAG6bvMj7guW/preview" },
-    { title: "Progress Presentation 1", description: "First progress review.",                                     date: "TBA", link: "https://docs.google.com/presentation/d/1f9M761GK-Il9-oKGsVqFsTuIsnJNDT4u/preview" },
-    { title: "Progress Presentation 2", description: "Second progress review.",                                    date: "TBA", link: "https://docs.google.com/presentation/d/1vW9WQ5F5lYsoCUeHmZMhRQ6xqz3XDodr/preview" },
+    { title: "Proposal Presentation",   description: "Research need, objectives, scope and the four components.", date: "TBA", link: "https://drive.google.com/file/d/1-xy1ZGmg7BQEj97mfd1zPAG6bvMj7guW/view" },
+    { title: "Progress Presentation 1", description: "First progress review.",                                     date: "TBA", link: "https://drive.google.com/file/d/1f9M761GK-Il9-oKGsVqFsTuIsnJNDT4u/view" },
+    { title: "Progress Presentation 2", description: "Second progress review.",                                    date: "TBA", link: "https://drive.google.com/file/d/1vW9WQ5F5lYsoCUeHmZMhRQ6xqz3XDodr/view" },
     { title: "Final Presentation",      description: "Final demonstration of the complete system.",               date: "TBA", link: "PASTE_DRIVE_LINK_HERE" }
   ],
 
