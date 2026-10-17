@@ -1067,13 +1067,13 @@
       return personCard(s, i, { sup: true, extra: '<span class="comp">' + esc(s.role) + "</span>" });
     }).join("");
     root.innerHTML =
-      '<section class="section" style="padding-top:24px" aria-labelledby="team-h"><div class="container">' +
-        '<div class="section-head reveal"><span class="eyebrow">Research team</span><h2 id="team-h">Group members</h2></div>' +
-        '<div class="grid grid-4">' + members + "</div>" +
-      "</div></section>" +
-      '<section class="section section-alt" aria-labelledby="sup-h"><div class="container">' +
+      '<section class="section" style="padding-top:24px" aria-labelledby="sup-h"><div class="container">' +
         '<div class="section-head reveal"><span class="eyebrow">Guidance</span><h2 id="sup-h">Supervisors</h2></div>' +
         '<div class="grid grid-2 sup-grid">' + sups + "</div>" +
+      "</div></section>" +
+      '<section class="section section-alt" aria-labelledby="team-h"><div class="container">' +
+        '<div class="section-head reveal"><span class="eyebrow">Research team</span><h2 id="team-h">Team Members</h2></div>' +
+        '<div class="grid grid-4">' + members + "</div>" +
       "</div></section>";
     wireImageFallbacks(root);
   }
