@@ -280,8 +280,8 @@ window.SITE_DATA = {
     { title: "Progress Presentation 2", date: "2 September 2026",  marks: "", status: "Completed", description: "Second progress review of the integrated system and each component, presented to the panel.",
       feedback: { text: "Excellent progress for all four components. The panel recommended focusing on the research paper.",
                   image: "assets/images/feedback/pp2-feedback.png", imageAlt: "PP2 panel feedback sheet" } },
-    { title: "Final Assessment",        date: "20 October 2026",   marks: "", status: "Upcoming",  description: "Final demonstration of the complete system with the final reports and research paper." },
-    { title: "Viva (including website viva)", date: "20 October 2026", marks: "", status: "Upcoming",  description: "Individual viva where each member presents and defends their component." },
+    { title: "Final Assessment",        date: "20 October 2026",   marks: "", status: "Completed", description: "Final demonstration of the complete system with the final theses and research paper." },
+    { title: "Viva (including website viva)", date: "20 October 2026", marks: "", status: "Completed", description: "Individual viva where each member presents and defends their component." },
     { title: "Website Submission",      date: "11 October 2026",   marks: "", status: "Completed", description: "Research website presenting the project, milestones, documents, presentations and team." }
   ],
 
@@ -320,13 +320,20 @@ window.SITE_DATA = {
       ]
     },
     {
-      group: "Final Reports",
+      group: "Final Thesis",
+      // No group thesis: this card has no link of its own and only groups the four individual theses.
       items: [
-        { title: "Final Report — Group (Main)",   icon: "book", description: "Integrated final report of the complete system.",   link: "PASTE_DRIVE_LINK_HERE" },
-        { title: "Final Report — Navodya W.P.D.N", icon: "file", description: "C1 EduPlay individual report.",                    link: "PASTE_DRIVE_LINK_HERE" },
-        { title: "Final Report — Methsani M.M.M",  icon: "file", description: "C2 Handwriting Recognition individual report.",    link: "PASTE_DRIVE_LINK_HERE" },
-        { title: "Final Report — Karannagoda I.U", icon: "file", description: "C3 Guided Timed Reading individual report.",       link: "PASTE_DRIVE_LINK_HERE" },
-        { title: "Final Report — Abekoon I.L",     icon: "file", description: "C4 Pronunciation Verification individual report.", link: "PASTE_DRIVE_LINK_HERE" }
+        {
+          title: "Final Thesis — Smart Reading Buddy", icon: "book", featured: true,
+          description: "Individual final theses for the four components of the system.",
+          childrenLabel: "Individual theses", childLabel: "thesis",
+          children: [
+            { title: "Navodya W.P.D.N",  subtitle: "IT22204370 · C1 EduPlay",                    link: "https://drive.google.com/file/d/1vTWziva5mnF1D5Bp1Cvk0Fel_kioVb-X/view?usp=sharing" },
+            { title: "Methsani M.M.M",   subtitle: "IT22192646 · C2 Handwriting Recognition",    link: "https://drive.google.com/file/d/1QcwteCQAGhp1DnSA4Cr5fboGE5kkN3N2/view?usp=sharing" },
+            { title: "Karannagoda I.U",  subtitle: "IT22201300 · C3 Guided Timed Reading",       link: "https://drive.google.com/file/d/1qlvYTtV7-PyHNlvrlpoQld5zTyV1_tQQ/view?usp=sharing" },
+            { title: "Abekoon I.L",      subtitle: "IT22175670 · C4 Pronunciation Verification", link: "https://drive.google.com/file/d/1ZqfhxWW0g5ixKkYG5my3Fwl6deUOFA-G/view?usp=sharing" }
+          ]
+        }
       ]
     },
     {

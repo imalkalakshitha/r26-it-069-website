@@ -970,8 +970,10 @@
     var html = groups.map(function (g, gi) {
       var count = 0;
       var cards = (g.items || []).map(function (it, i) {
-        var pending = isPendingLink(it.link);
-        total++; count++; if (!pending) submitted++;
+        // A card with children but no link of its own (e.g. Final Thesis) is only a container and isn't counted itself
+        var container = !it.link && (it.children || []).length > 0;
+        var pending = container ? it.children.some(function (ch) { return isPendingLink(ch.link); }) : isPendingLink(it.link);
+        if (!container) { total++; count++; if (!pending) submitted++; }
         // Sub-documents grouped inside a main card (e.g. individual proposals under the group proposal)
         var kids = (it.children || []).map(function (ch) {
           var chPending = isPendingLink(ch.link);
@@ -980,14 +982,14 @@
             '<span class="sub-doc-icon">' + icon("user") + "</span>" +
             '<span class="sub-doc-text"><b>' + esc(ch.title) + "</b>" + (ch.subtitle ? "<small>" + esc(ch.subtitle) + "</small>" : "") + "</span>" +
             statusBadge(!chPending, "Submitted", "Pending") +
-            viewButton(ch.link, "View", "proposal of " + ch.title) +
+            viewButton(ch.link, "View", (it.childLabel || "proposal") + " of " + ch.title) +
           "</li>";
         }).join("");
         return '<article class="card doc-card' + (it.featured ? " doc-featured" : "") + ' reveal"' + d(i) + ">" +
           '<div class="doc-top"><div class="card-icon">' + icon(it.icon || "file") + "</div>" + statusBadge(!pending, "Submitted", "Pending") + "</div>" +
           "<h3>" + esc(it.title) + "</h3><p>" + esc(it.description) + "</p>" +
-          viewButton(it.link, "View", it.title) +
-          (kids ? '<h4 class="sub-doc-head">Individual proposals</h4><ul class="sub-docs">' + kids + "</ul>" : "") +
+          (container ? "" : viewButton(it.link, "View", it.title)) +
+          (kids ? '<h4 class="sub-doc-head">' + esc(it.childrenLabel || "Individual proposals") + '</h4><ul class="sub-docs">' + kids + "</ul>" : "") +
         "</article>";
       }).join("");
       return '<section class="doc-group" data-group="' + gi + '" aria-labelledby="dg-' + gi + '">' +
