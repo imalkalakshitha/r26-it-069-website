@@ -350,7 +350,7 @@ window.SITE_DATA = {
     { title: "Proposal Presentation",   description: "Research need, objectives, scope and the four components.", date: "17 March 2026", link: "https://drive.google.com/file/d/1-xy1ZGmg7BQEj97mfd1zPAG6bvMj7guW/view" },
     { title: "Progress Presentation 1", description: "First progress review.",                                     date: "12 May 2026", link: "https://drive.google.com/file/d/1f9M761GK-Il9-oKGsVqFsTuIsnJNDT4u/view" },
     { title: "Progress Presentation 2", description: "Second progress review.",                                    date: "2 September 2026", link: "https://drive.google.com/file/d/1vW9WQ5F5lYsoCUeHmZMhRQ6xqz3XDodr/view" },
-    { title: "Final Presentation",      description: "Final demonstration of the complete system.",               date: "20 October 2026", link: "PASTE_DRIVE_LINK_HERE" }
+    { title: "Final Presentation",      description: "Final demonstration of the complete system.",               date: "20 October 2026", link: "https://drive.google.com/file/d/1nEteZXp4BK6PEmm3X0NlzOaXwkFc-5YJ/view" }
   ],
 
   /* ------------------------------------------------------------------ */
