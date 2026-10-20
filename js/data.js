@@ -315,8 +315,7 @@ window.SITE_DATA = {
     {
       group: "Checklist Documents",
       items: [
-        { title: "Checklist — Progress Presentation 1", icon: "clipboard", description: "Checklist submitted for PP1.", link: "PASTE_DRIVE_LINK_HERE" },
-        { title: "Checklist — Progress Presentation 2", icon: "clipboard", description: "Checklist submitted for PP2.", link: "PASTE_DRIVE_LINK_HERE" }
+        { title: "Checklist Document", icon: "spreadsheet", description: "Project checklist document.", link: "https://drive.google.com/file/d/18LdOmJq7xY_e1EI0COWQhgBBh78zhGyQ/view" }
       ]
     },
     {
